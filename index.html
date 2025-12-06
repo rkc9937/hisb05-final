@@ -267,10 +267,12 @@
 
         <p>Fundementally, our analysis is three questions:</p>
         <ol>
-            <li>Is there a correlation between an album’s Album-Equivalent Units (AEU) and its likelihood of winning Album of the Year?</li>
+            <li>Is there a correlation between an album’s Album-Equivalent Units (AEU)* and its likelihood of winning Album of the Year?</li>
             <li>Is there a correlation between Pitchfork review scores and Album of the Year outcomes?</li>
             <li>Is there a correlation between quantitative musical characteristics (BPM, loudness, danceability), that are shown to give a song mass appeal, and the album winning Album of the Year?</li>
         </ol>
+
+        <p>* Note: for our purpose, an album before the streaming era's AEU is just its pure sales. This is fine as AEU serves as a normalizing way to account for the streaming era.</p>
 
         <p>Correlation is mathematically defined as the joint covariance between two random variables, divided by their products of their standard deviation.</p>
         
@@ -309,10 +311,144 @@
         <p>This allows us to evaluate how strongly higher feature values, X, are associated with winning.</p>
     </section>
 
-    <section 
+    <section id="data-and-methods">
+        <h2>Data and Methods</h2>
+
+        <p>
+            Since our analysis deals with three questions, we need 3 "master" data sets. These data sets can be an aggregate of existing data sets, and traditional historical sources.
+        </p>
+
+        <h3>Historic Album of the Year Winners, and Nominees</h3>
+        <p>
+            Every one of our datasets will need Album of the Year Winners, and Nominees for each Grammy Awards. The <a href="https://www.grammy.com/awards">Official Grammys Website</a> does infact have this, but we would have to scrape the data, as nominees are not in the same place as the winners.
+        </p>
+
+        <h3>Album Equivalent Units</h3>
+
+        <p>
+            The first dataset we have to construct is the AEU of each Album of the Year nominee and winners. This will give us exactly what we need to programatically get our rpb coefficent. 
+        </p>
+        <p>
+            The challenge is to locate the date of each Grammy Awards historically, then measure a fixed-timeframe AEU for every nominated album. This gives us a fairer comparison, since each album is evaluated over the same relative period leading up to the ceremony.
+        </p>
+        <p>
+            The Recording Academy has already approached eligibility in a similar time-bounded way. They enforce a release window that determines which albums qualify for a given ceremony, commonly cited as September 1st through August 31st in many years (citation needed).
+        </p>
+        <p>
+            The remaining obstacle is data reliability, especially for older releases. Because of this, our time window needs to be selected carefully and possibly adjusted across eras.
+        </p>
+        <p>
+            Since 1991, the Billboard 200 has operated on weekly sales logs collected through Nielsen SoundScan (now Luminate), meaning album performance has been tracked at the point of sale and converted into weekly unit counts (citation needed). This is great, but leaves a gap from 1958 - 1991. What we do have, pretty consistently, from the late 1960s is weekly charts.
+        </p>
+        <h4>Regression on Chart Position to Estimated Sales</h4>
+        <p>
+            Having access to a <a href="https://www.billboard.com/charts/hot-100/1968-02-10/">Billboard PRO</a> account gives us access to all historical archived charts, from the companys' inception. This is the data we want to estimate album sales for. What we would do is, first normalize our 1991 - present data, and train a regression model on the data. We would have to experiment with different regression models, but we would want a linear model and a non-linear model where we can compare baseline metrics. 
+        </p>
+        <p>
+            Say we have a simple linear regression model:
+        </p>
+        <latex-js>
+            \documentclass{article}
+            \usepackage{amsmath}
+
+            \begin{document}
+            \[
+                \huge{y = \textbf{w}^{T}\textbf{x} + b}
+            \]
+            \end{document}
+        </latex-js>
+
+        <p>The goal of the model is to learn the weights w = [w1, w2] by minimizing the squared error between predictions and the true sales values.</p>
+
+        <p>Here, y represents weekly unit sales, and x encodes chart position and album release date. We will run a standard 80 20 train test split on the SoundScan era data, evaluate performance, and select the model that yields the strongest results.</p>
+
+        <p>Our baseline evaluation metric will be R^2. It gives us a direct measure of how strongly our model explains variance in weekly sales.</p>
+
+        <p>Once trained, the model lets us infer sales from historical weekly chart positions. Because charting is consistent across eras, we will estimate early sales using a four week window of inferred weekly units and average them to produce a stable sales signal.</p>
+
+        <p>By including release date as an input, we expect the model to detect the underlying trend that weekly sales scale upward in later decades as access to music explodes.</p>
+
+        <p>To summarize we have access to the following information:</p>
+        <ul>
+            <li>From 2014, to the present, we have weekly unit sales in AEU for each charting album</li>
+            <li>From 1991 to 2014, we have pure-sale weekly unit sales for each charting album. This is fine, as AEU is trying to account for the "streaming era" , i.e. AEU is a data normalization.</li>
+            <li>From 1958 to 1990, we only consistently have weekly charts. For Albums that do not have archival information on their weekly unit sales, we will use the model to estimate them. </li>
+        </ul>
+
+        <p>The reason why we are not using the model consistently, is because we are confident that there are albums within the 1958 to 1990 timeframe that do have weekly unit sales. This is due to their popularity, and prestiege, that digital historians have more care in presetiving the data. One notable example is Michael Jackson's Thriller which saw multiple accounts of a "million units a week sold" (citation needed)</p>
+
+        <h3>Pitchfork Reviews</h3>
+
+        <p>The obvious limitation is Pitchfork’s age. The site launched in 1996, but its modern, standardized review system did not solidify until around 2009. That leaves a large portion of Grammy history with no consistent scoring baseline.</p>
+
+        <p>The tradeoff is that we can still analyze whether Pitchfork’s influence increases over time. If higher review scores trend alongside Album of the Year winners in later years, it suggests a potential alignment between critical reception and Grammy outcomes.</p>
+
+        <p>The first step is to pull historical reviews using digital archiving platforms such as <a href="https://archive.org">archive.org</a>. This gives us access to older review pages that may not appear in the live index.</p>
+
+        <p>We will only include reviews that were published before nomination announcements for the relevant Grammy year. That ensures we are measuring critical reception prior to voting, not after.</p>
+
+        <p>This workflow is manual. For every year from 2009 forward we need to locate the nomination release date, then filter archived Pitchfork pages to include only reviews posted before that point.</p>
+
+        <h3>Song Characteristics</h3>
+        <p>As stated in the previous section, song characteristics such as loudness, BPM, dancebility, and valence directly correlate with a tracks popularity.</p>
+        <p>Since an Album is an accumilation of songs, we can average each of the song charactistics and get album characteristics.</p>
+    
+        <p>The great thing is, the paper that was written showing the correlation to popularity from those metrics specifically got their metrics from Spotify. This means that the <a href="https://developer.spotify.com/documentation/web-api">Spotify Application Programming Interface (API)</a> enables us to easily get formatted data for each album, each song within the album, and each song characteristic.</p>
+        <p>Our data engineering here would just to build a script that will automate this for each song within each Album, and get an aggregate. We can then perform the correlation as described in the previous section.</p>
 
 
 
+    </section>
+
+    <section>
+        <h2>Project Plan</h2>
+        <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th>Phase</th>
+          <th>Milestone</th>
+          <th>Length</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Build a dataset containing every Album of the Year Winner and nominee.</td>
+          <td>An outputted formatted dataset (CSV) including each Grammy Award AOTY Winner and Nominee. This involves building a script that will scrape, and validate, the current website</td>
+          <td>~2 weeks</td>
+        </tr>
+        <tr>
+          <td>Extract Weekly Album Units from  Nielsen SoundScan (now Luminate) for Albums from 1991-present</td>
+          <td>Get professional access to this dataset via funding/instution connects, etc. Evaluate the dataset, see if we need to do data engineering to format the dataset.</td>
+          <td>~2-3 weeks</td>
+        </tr>
+        <tr>
+          <td>Build and compare regression models for predicitng Album Sales from Billboard Charts</td>
+          <td>An accurate model that will output weekly album sales from a 2-dimensional input space that weighs album date and chart postion.</td>
+          <td>~6 weeks</td>
+        </tr>
+        <tr>
+          <td>Scraping Pitchforks Site</td>
+          <td>An outputted formatted dataset (JSON or CSV) that includes an album score (pre nomination) for every nomination and winner for AOTY.</td>
+          <td>~4-5 weeks</td>
+        </tr>
+        <tr>
+          <td>Using Spotifys API to get Song Features</td>
+          <td>Building a script that takes every nominee and winner for every Grammy Awards AOTY and find an aggregate Album Characteristic based on the average loudness, valence, BPM, and danceability metrics.</td>
+          <td>~1 week</td>
+        </tr>
+        <tr>
+          <td>Computing RPB coefficent</td>
+          <td>For each dataset, we compute the RPB coefficent, so we can see what features correlate the most to Grammy Award winning.</td>
+          <td>2-3 days</td>
+        </tr>
+        <tr>
+          <td>Reflection and Improvements</td>
+          <td>Review findings, evaluate model performance, justify observed correlations,  \nand refine methodology where needed.</td>
+          <td>~1 week</td>
+        </tr>
+      </tbody>
+        </table>
+    </section>
 
     <section id="footnotes">
         <h2>Footnotes</h2>

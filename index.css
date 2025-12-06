@@ -17,3 +17,8 @@ ol { padding-left: 1rem; }
 section > * { margin-block-start: 1rem;}
 a { text-decoration: underline;}
 svg { width: 100%;}
+table { margin-top: 1rem;}
+table thead tr th {
+    text-align: left;
+    border-bottom: 2px solid black;
+}
