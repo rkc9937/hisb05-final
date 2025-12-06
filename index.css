@@ -1,1 +1,19 @@
-/* Custom styles */
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+    --max-width: 75rem;
+}
+
+body {
+    font-family: 'Lato', sans-serif;
+    margin: 0 auto;
+    max-width: var(--max-width);
+}
+
+body section { margin-top: 2rem; }
+ul { padding-left: 1rem; }
+ul li { margin-bottom: 0.5rem; }
+ol { padding-left: 1rem; }
+section > * { margin-block-start: 1rem;}
+a { text-decoration: underline;}
+svg { width: 100%;}

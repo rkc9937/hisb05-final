@@ -1,14 +1,327 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HISB05 Final Project</title>
     <link rel="stylesheet" href="reset.css">
     <link rel="stylesheet" href="index.css">
+    <noscript>
+        You need JS to view this!
+    </noscript>
+    <script type="module">
+        import { LaTeXJSComponent } from "https://cdn.jsdelivr.net/npm/latex.js/dist/latex.mjs"
+        customElements.define("latex-js", LaTeXJSComponent)
+    </script>
+
+    <style>
+        latex-js {
+            display: block;
+            margin: 2rem auto;
+            width: fit-content;
+            /* font-size: 3rem; */
+        }
+    </style>
 </head>
+
 <body>
-    <div id="app"></div>
-    <script src="app.js"></script>
+    <h1>An analysis on the correlation of quantitative album attributes to Album of the Year winners.</h1>
+    <p>Rishabh Chowdhary</p>
+    <p>1008739634</p>
+    <p>HIS B05: How We Became Digital: Introduction to our Information Age</p>
+
+    <section id="proposal">
+        <h2>Project Proposal</h2>
+        <ul>
+            <li>
+                What is this project?
+                <p>The idea of this project is to discover (or deny) a correlation between quantitative album
+                    attributes. </p>
+                <p>Quantitative album attributes can be defined in many ways:</p>
+                <ol style="padding-left: 2rem;">
+                    <li>By their commercial performance: Pure Album Sales, Album-Equivalent Units (streaming era), Units
+                        Certified (RIAA), or Shipments to retail.</li>
+                    <li>By their critical reception: Metacritic scores, Pitchfork ratings, or Grammy nominations/wins.
+                    </li>
+                    <li>By their musical characteristics: Tempo (BPM), Key, Duration, or Loudness.</li>
+                </ol>
+                <p>Ultimately, the goal is to see if there is a correlation between any of these attributes (or a
+                    combination of all) and the likelihood of an album winning the Grammy for Album of the Year.</p>
+            </li>
+            <li>
+                How does this project demonstrate thinking historically?
+                <p>
+                    Well, this project looks into the history of the Grammy Awards -- something of importance to
+                    historians who specialize in pop culture.
+                </p>
+                <p>
+                    There is a popular term called the GRAMMY Effect - a phenomenon detailing the effect of a Grammy win
+                    on an artist wo wasnt as well know.
+                </p>
+                <p>
+                    We have many oppurtunities to demonstrate thinking historically - like making interpretations based
+                    on the data we collect.
+                </p>
+            </li>
+            <li>
+                How would we do this?
+                <p>
+                    Data collection: we can do this via web scraping Billboard, or other music charting websites -- for
+                    commercial success. For critical reception, it would be an average of scores from a couple of
+                    different review sites. For musical characteristics, we can use the Spotify API to get audio
+                    features of each album.
+                </p>
+                <p>
+                    Data analysis: pratically, this would be a classification problem. Our best bet would be to use a
+                    KNN classifier to predict whether an album would win the award based on its attributes.
+
+                </p>
+            </li>
+        </ul>
+    </section>
+
+    <section id="intro">
+        <h2>Introduction</h2>
+        <p>This project aims to analyze the correlation between various quantitative album attributes and the winners of
+            the Grammy Awards "Album of the Year" award.</p>
+
+        <!-- <h3>What are the GRAMMYs?</h3> -->
+        <p>
+            The Grammy Awards, abbreviated as the GRAMMYs, is an award show presented by the United States Recording
+            Academy whose mission is to "recognize excellence in the recording arts ... and ensure that music remains an
+            indelible part of our culture" <a href="#ftn1">[1]</a>.
+        </p>
+        <p>
+            The Grammy Awards have been a pop culture phenomenon for decades, pulling in roughly 10 million views
+            consistently for 40 years <a href="#ftn2">[2]</a>. The widespread appeal of the awards has led to a
+            commercial effect, known to be called the GRAMMY effect, which attributes large-scale commercial success, of
+            an album, to winning a Album of the Year GRAMMY award.
+        </p>
+        <p> Giacomo Negro at Emory University, along with colleagues, examined what happens to artists after receiving
+            Grammy recognition. Their findings support the GRAMMY Effect: a nomination alone correlated with a jump of
+            roughly 22 spots in <em>Billboard</em> peak chart position, while an actual win pushes that to about 27 <a
+                href="#ftn4">[4]</a>. </p>
+        <p>
+            Beyond their clear economic influence, the Grammy Awards hold major historical and sociological significance
+            within the United States. In the 2006 paper <i>Award Ceremony as an Arbiter of Commerce and Canon in the
+                Popular Music Industry</i>,
+            Mary R Watson talks about how the Recording Academy positioned the Grammys as the “hallmark of peer
+            recognition”, and that the Grammys positioned themselves, uniquely, as a mingle between "peer and popular
+            recognition" making "them a
+            significant arbiter of canon formation in the popular music industry".
+        </p>
+        <p>
+            Interestingly, the paper cites growing agendas of internal Recording Academy constituents to exert influence
+            on award decisions formatively impacting legitimacy of genres in popular music industry.
+            An early example of this is the first Grammy Awards (1958), which deliberately left out the
+            high-<em>Billboard</em> charting rock-and-roll genre due to it being artistically 'inappropriate'. Within
+            context, the Academy consisted of music elites (CEOs of Recording Studios, Radios) who considered
+            rock-and-roll as a 'profane' genre.
+        </p>
+
+        <p>Additionally, Watson also states that the modern Awards have transformed to a status symbol within the music
+            industry; with an analysis of the <em>Billboard</em> discourse finding that majority of the text units,
+            between Artists, refer to the idea of winning an award translating to respect and reputation within the
+            field. </p>
+
+
+
+        <!-- <p>
+            The first point about "peer recognition" is crucial, as Watson says that constuients (or different groups/departments) within the Recording Academy fought to influence award decisions, and genre prevelance.
+            This led to the core values of the `correctness` of what they believed is an artistically appropriate genre of music. Watson claims that "artistically apprpopriate" was just a term to describe the tastes of the music industry elites.
+            Notably, she cites the first Grammy Awards in 1958, in where the committe decided to 
+
+
+
+
+
+
+            Specifically when televised coverage of the awards expanded and music consumption became more visually driven (MTV, and music videos), 
+            merchandisers began using Grammy nominations and wins as a sales signal, aggressively promoting selected artists. 
+            Also, how 
+        </p> -->
+        <p>
+            Ultimatley, the Grammys have a huge pop culture impact; posing a sociological, economical, and historical
+            impact throughout the years. And today, the Grammy Awards voting process advocates for an unbiased decision
+            based on merit. Specifically, the Voter's Code of Conduct states that a Voter must only be influenced by own
+            analysis of merit, and stating they should not be suggested by "sales volume/popularity" or "company
+            loyalties".
+        </p>
+        <p>
+            This project questions this merit-based judging by doing an analysis, specifically, on quantitative album
+            attributes relevant to commercial performance, critical reception, and musical characteristics of an album
+            before it got nominated, and won, an Album of the Year award.
+        </p>
+
+        <!-- 
+        <p>List 'album attributes' both qualitative and quantitative</p>
+        <p>Over the year shifts in genres</p>
+        <p>Our goal is to see how voting process can be predicted, clear service to community: <a href="https://www.recordingacademy.com/awards/voting-process" target="_blank">Grammy's Voting Process</a></p> -->
+    </section>
+
+    <section id="contribution-to-scholarship">
+        <h2>Contribution to Scholarship</h2>
+        <h3>Motivation behind the analysis</h3>
+        <p>A Voter for the Grammy Awards, formally called the Recording Academy Voting Member, casts in the "Final
+            Voting" phase - allowing these Voting Members to vote for three Fields in the genre Fields (in which they
+            are advised to vote in their area of expertise) plus the four categories in the General Field. (grammy award
+            website voting)</p>
+        <p>
+            Because Album of the Year belongs to the General Field, every Voting Member is required to cast a vote for
+            it. This naturally introduces high variability in voting outcomes, as not all voters share equal expertise.
+        </p>
+        <p>Looking into how one can be a Record Academy Voting Member showed that it is an invite only group. Every
+            year, the Recording Academy invites a "class" of new members into the Voting pool. The Recording Academy
+            doesn't explicitly describe the qualifications to get an invitation, but rather states that Voting Members
+            include "artists, producers, engineers, songwriters, and executive[s]" as a way to "recognize and celebrate
+            the work of their peers" (https://www.grammy.com/news/who-votes-for-the-2026-grammys)</p>
+        <p>There does seem to be a red flag here, specifically between the official Academys' Voters Code of Conduct and
+            the sample of people they chose to invite to be a Voting Member.</p>
+
+        <p>
+            It would be naive to assume that top-level record executives are unaware of the GRAMMY Effect, or that they
+            would ignore the potential financial gain that a win can produce by voting purely on artistic merit.
+        </p>
+
+        <p>
+            While we cannot directly prove voter intent, we can scrutinize loyalty and decision-making by examining
+            correlations between sales volume or popularity and Album of the Year winners, as well as by analyzing
+            musical characteristics to evaluate the expertise and priorities of the voting body.
+        </p>
+
+        <h3>Scoping Quantitative Album Attributes</h3>
+        <p>We can question the merit-based judging by observing if there is a correlation between Album of the Year
+            winners and "sales volume/popularity".</p>
+        <p>In this case, we need metrics pertaining to both "sales volume" and "popularity". Note that the two correlate
+            each other, when an album has higher sales volume, it is more popular.</p>
+        <p>Sales volume is a bit tricky, especially because we have to use metrics that account for the streaming era.
+            The Album-Equivalent Unit (AEU) does just that. In 2014, the <em>Billboard</em> music charts - an industry
+            standard record charts - switched from a pure album-sales metric to a AEU metric (citation needed). This new
+            metric takes into account album-streams; with 10 song sales, or 1500 song streams contained within an album
+            to one traditional album sale. This AEU metric, serves as a bridge between the present and the past, and
+            seems to be an industry standard for today’s music-charts (citation).</p>
+        <p>I talked briefly about how the Grammy Awards Voter’s Code of Conduct specifically says a voter must not vote
+            on, among other things, "company loyalty".
+            I made a hypothetical example with a record executive, and one of their signed artists, questioning the
+            merit of their vote. While I acknowledged a correlation between that specific example is impossible to show,
+            since the Voting Members list is not public, we can still question the merit with respect to a Voting
+            Members "company loyalty" through other metrics.
+        </p>
+        <p>
+            Pitchfork is an American online music magazine, primarily known for its album reviews (citation). In 2022
+            and 2023, Pitchfork averaged nearly three million unique monthly visitors (citation). In 2015, the American
+            mass media company Condé Nast purchased Pitchfork, leading to a new creative direction and expanding
+            opportunities for industry collaboration. Notably, in 2021, Condé Nast and Universal Music Group partnered
+            in a joint initiative to “expand video reach for advertisers,” with the goal of allowing advertisers to
+            access the combined “reach and influence of both companies.”
+        </p>
+
+        <p>
+            Universal Music Group (UMG) is one of the “Big Three” companies controlling a significant portion of the
+            United States music market (citation). Notable modern artists under UMG include Taylor Swift, Kendrick
+            Lamar, Drake, The Weeknd, Billie Eilish, and others. This direct connection and collaboration between Condé
+            Nast and UMG prompts an investigation into whether a correlation exists between Pitchfork album review
+            scores and Album of the Year winners. Such a correlation does not prove voter intent or label-based loyalty
+            (and may be coincidental), but it raises the question of whether critical reviews and Grammy outcomes align
+            more closely than expected.
+        </p>
+
+        <p>
+            Quantitative Album Attributes extends to the composition of musical characteristics as well. A song can
+            contain quantitative attributes such as: Tempo (BPM), Key, Duration, and Loudness.
+        </p>
+        <p>
+            In a 2025 study titled <em>Music Popularity Prediction Through Data Analysis of Music’s
+                Characteristics</em>, Jaehyun Kim developed a machine-learning model that achieved 90% accuracy in
+            predicting song popularity based on quantitative audio features. His findings indicate that loudness, BPM,
+            danceability, and valence directly correlate with a track’s popularity. If similar attributes are found to
+            correlate with Album of the Year winners, it calls into question the extent to which Voting Members
+            prioritize artistic merit - and, accordingly, the Academy’s stated mission to "recognize excellence in the
+            recording arts".
+        </p>
+
+
+        <h3>What important service will this analysis provide to the public?</h3>
+        <p>
+            The analysis mention above calls into question the integrity of the voting process on one of the biggest
+            Grammy Awards, the Album of the Year. The Awards themselves being a major pop culture phenomenon, that
+            attracts millions of viewers each year, have been publicly critized for unfair voting practices - but yet
+            have still managed to entrance the music industry.
+        </p>
+
+        <p>Rob Kenner, a Voting Member of the Recording Academy, says that there is an "unwritten rule" which avoids
+            green-lighting nominations for lesser-known artists, because "famous people tend to get more votes from
+            clueless Academy members, regardless of the quality of their work". Even with public 'exposures' the
+            Recording Academy still stands by their mission statement, and has not addressed this at all. Despite public
+            chatter of the unfair voting practices, the Grammys still hold huge reputation within artists in the music
+            industry. This was mentioned, in the Introduction, with Watson's analysis of <em>Billboard</em> text units,
+            however we can see this through a growing popularity in Artists mentioning the Grammys in their music:</p>
+        <div id="grammy-chart"></div>
+        <p>Note: data collected via <a href="genius.com">Genius.com</a>, a website to search for songs with relevant lyrics</p>
+        <p>
+            Ultimately, this analysis benefits the public by presenting correlations that challenge the integrity of the Recording Academy’s voting practices.
+        </p>
+
+        <h3>Steps to execute the analysis</h3>
+
+        <p>Fundementally, our analysis is three questions:</p>
+        <ol>
+            <li>Is there a correlation between an album’s Album-Equivalent Units (AEU) and its likelihood of winning Album of the Year?</li>
+            <li>Is there a correlation between Pitchfork review scores and Album of the Year outcomes?</li>
+            <li>Is there a correlation between quantitative musical characteristics (BPM, loudness, danceability), that are shown to give a song mass appeal, and the album winning Album of the Year?</li>
+        </ol>
+
+        <p>Correlation is mathematically defined as the joint covariance between two random variables, divided by their products of their standard deviation.</p>
+        
+        <latex-js>
+            \documentclass{article}
+            \usepackage{amsmath}
+
+            \begin{document}
+            \[
+                {\huge corr({X,Y}) = \frac{\operatorname{cov}(X, Y)}{\sigma_X \, \sigma_Y}}
+            \]
+            \end{document}
+        </latex-js>
+        
+        <p>A random variable is a mapping from a sample space to the real numbers. Since our analysis deals with quantitative real-valued features, we can apply the standard covariance and standard deviation formulations directly when calculating joint covariance. (citation)</p>
+
+        <p>The question then becomes: how do we map Album of the Year (AOTY) status to the real numbers? We define AOTY as an indicator/binary random variable, that is, 1 if album X wins, 0 otherwise.</p>
+
+        <p>This works, but it comes with a limitation. We are comparing continuous random features (AEUs, song characteristics, Pitchfork review scores) against a binary one. Traditional correlation formulas here flatten nuance, failing to represent the distributional differences between winners and non-winners. (citation)</p>
+
+        <p>Statisticians have addressed this exact scenario. For a continuous feature measured against a binary outcome, the appropriate metric is the point-biserial correlation. Our analysis therefore partitions albums into winners and non-winners, then compares the mean value of each quantitative feature across groups.</p>
+        <p>What we get is a coefficent, rpb, which ranges from -1 to 1 with extremitys indicating a perfect negative correlation, or a perfect postive correlation, respectively.</p>
+        <p></p>
+        <latex-js>
+            \documentclass{article}
+            \usepackage{amsmath}
+
+            \begin{document}
+            \[
+                \huge{r_{pb} = \frac{\mu_{1} - \mu_{0}}{s_{n}} \sqrt{\frac{n_{1} n_{0}}{n^{2}}}}
+            \]
+            \end{document}
+        </latex-js>
+        <p>The formula essentially tells us to take the mean value of our continuous feature X (AEU, song characteristics, Pitchfork review scores) among winners, minus the mean among non-winners. We then divide this difference by the standard deviation of X, scaled by a factor that accounts for sample balance across groups. Specifically, the denominator includes the standard deviation of X multiplied by the square root of the product of group sizes divided by the total number of data points squared.</p>
+
+        <p>This allows us to evaluate how strongly higher feature values, X, are associated with winning.</p>
+    </section>
+
+    <section 
+
+
+
+
+    <section id="footnotes">
+        <h2>Footnotes</h2>
+        <p id="ftn1">[1] Recording Academy. “About the Recording Academy.” Accessed December 4, 2025. <a
+                href="https://www.recordingacademy.com/about"></a>https://www.recordingacademy.com/about</a></p>
+        <p id="ftn4"> [4] Giacomo Negro, Balázs Kovács, and Glenn R. Carroll, What’s Next? Artists’ Music After Grammy
+            Awards (American Sociological Review, 2022).</p>
+    </section>
+    <script type="module" src="app.js"></script>
 </body>
+
 </html>
